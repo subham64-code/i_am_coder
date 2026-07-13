@@ -17,7 +17,7 @@ model User {
   password       String // bcrypt hash
   role           Role       @default(STUDENT)
   status         UserStatus @default(PENDING)
-  studentId      String?    @unique
+  studentId      String?
   mustChangePass Boolean    @default(true)
   fullName       String
   phone          String?
