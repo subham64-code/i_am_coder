@@ -31,6 +31,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm install
+      - run: npm run prisma:generate --workspace server
       - run: npm run lint --workspace server
       - run: npm run typecheck --workspace server
       - run: npm run build --workspace server
