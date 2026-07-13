@@ -7,6 +7,6 @@
   "outputDirectory": "client/.next",
   "rootDirectory": ".",
   "env": {
-    "NEXT_PUBLIC_API_URL": "@iamcoder_api_url"
+    "NEXT_PUBLIC_API_URL": "https://iamcoder-server.onrender.com/api/v1"
   }
 }

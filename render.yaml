@@ -1,5 +1,6 @@
 # Render deployment for I AM CODER backend (Express + Prisma)
-# Set these as environment variables / secret files in the Render dashboard.
+# Deploy via Render Dashboard -> New -> Blueprint -> connect this repo (render.yaml is auto-detected),
+# or use `render` CLI. Secret values marked sync:false must be filled in the Render dashboard.
 
 services:
   - type: web
@@ -14,21 +15,29 @@ services:
         value: production
       - key: PORT
         value: 4000
+      # --- Databases (fill these in the Render dashboard) ---
       - key: DATABASE_URL
         sync: false
       - key: MYSQL_URL
         sync: false
       - key: REDIS_URL
         sync: false
+      # --- Auth ---
       - key: JWT_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
         sync: false
+      - key: ADMIN_EMAILS
+        value: subhambehera4431@gmail.com,subhambehera89418@gmail.com
+      # --- Cloudinary (document storage) ---
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
         sync: false
       - key: CLOUDINARY_API_SECRET
+        sync: false
+      # --- Email (Brevo REST is primary; SMTP is fallback) ---
+      - key: BREVO_API_KEY
         sync: false
       - key: MAIL_HOST
         sync: false
@@ -36,6 +45,9 @@ services:
         sync: false
       - key: MAIL_PASS
         sync: false
+      - key: MAIL_FROM
+        value: I AM CODER <subhambehera2023@gift.edu.in>
+      # --- Frontend wiring (set to your Vercel URL) ---
       - key: CLIENT_URL
         value: https://iamcoder.vercel.app
       - key: API_PREFIX
