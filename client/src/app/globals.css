@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #060914;
+  --foreground: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-glass;
+  }
+  .glass-strong {
+    @apply bg-white/10 backdrop-blur-2xl border border-white/15 rounded-2xl;
+  }
+  .btn-neon {
+    @apply px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300;
+    background: linear-gradient(135deg, #3b82f6, #a78bfa, #22d3ee);
+    background-size: 200% 200%;
+    @apply animate-gradient-pan;
+  }
+  .btn-neon:hover {
+    @apply shadow-neon -translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply px-6 py-3 rounded-xl font-semibold border border-white/15 text-white/90
+      hover:bg-white/10 transition-all duration-300;
+  }
+  .text-gradient {
+    @apply bg-gradient-brand bg-clip-text text-transparent animate-gradient-pan;
+    background-size: 200% 200%;
+  }
+  .section {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20;
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-neon hover:border-white/25;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #060914;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#3b82f6, #a78bfa);
+  border-radius: 10px;
+}
+
+/* Cursor glow */
+.cursor-glow {
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.18), transparent 60%);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  filter: blur(20px);
+  animation: cursor-glow 3s ease-in-out infinite;
+}
+
+/* Disable selection/copy where enforced (best-effort, app-level) */
+.restricted {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}

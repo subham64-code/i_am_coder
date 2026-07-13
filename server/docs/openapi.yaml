@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: I AM CODER API
+  version: 1.0.0
+  description: >
+    Production REST API for the I AM CODER free e-learning platform.
+    Authentication uses Bearer JWT access tokens. Refresh tokens are
+    returned on login and can be rotated at /auth/refresh.
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local
+  - url: https://api.iamcoder.dev/api/v1
+    description: Production
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      summary: Student/Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: Tokens returned
+  /auth/refresh:
+    post:
+      summary: Rotate refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        "200": { description: New tokens }
+  /auth/otp/request:
+    post:
+      summary: Request OTP for email login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { email: { type: string } } }
+  /application/apply:
+    post:
+      summary: Submit multi-step student application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Application"
+      responses:
+        "201": { description: Pending }
+  /courses:
+    get:
+      summary: List published courses
+      responses:
+        "200": { description: Courses }
+  /quiz/submit:
+    post:
+      summary: Submit quiz with instant scoring
+      security: [{ bearerAuth: [] }]
+      responses:
+        "201": { description: Result }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Application:
+      type: object
+      required: [fullName, email, password, confirmPassword, phone]
+      properties:
+        fullName: { type: string }
+        email: { type: string }
+        password: { type: string }
+        confirmPassword: { type: string }
+        phone: { type: string }

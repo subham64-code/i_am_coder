@@ -1,0 +1,262 @@
+// Prisma schema — MongoDB (primary document store for I AM CODER)
+// Run: prisma generate && prisma migrate dev
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------- USERS -----------------------
+model User {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  email          String     @unique
+  username      String?    @unique
+  password       String // bcrypt hash
+  role           Role       @default(STUDENT)
+  status         UserStatus @default(PENDING)
+  studentId      String?    @unique
+  mustChangePass Boolean    @default(true)
+  fullName       String
+  phone          String?
+  avatar         String?
+  refreshTokens  String[]   // stored refresh token hashes for revocation
+  devices        Json?
+  failedLogins   Int        @default(0)
+  lockedUntil    DateTime?
+  lastLogin      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([role, status])
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  FACULTY
+}
+
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+// ----------------------- COURSES -----------------------
+model Course {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug         String   @unique
+  title        String
+  category     String
+  level        Level    @default(BEGINNER)
+  description  String
+  roadmap      Json?
+  thumbnail    String?
+  tags         String[]
+  instructor   String?
+  price        Float    @default(0)
+  isFree       Boolean  @default(true)
+  rating       Float    @default(0)
+  enrolled     Int      @default(0)
+  modules      Json? // [{title, lessons:[{title, videoUrl, notesUrl, duration}]}]
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([category])
+  @@index([published])
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// ----------------------- NOTES -----------------------
+model Note {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  courseId  String   @db.ObjectId
+  title     String
+  fileUrl   String
+  thumbnail String?
+  type      String   @default("pdf")
+  createdAt DateTime @default(now())
+  @@index([courseId])
+}
+
+// ----------------------- VIDEOS -----------------------
+model Video {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  courseId   String   @db.ObjectId
+  title      String
+  url        String // Cloudinary or private YouTube
+  provider   String   @default("cloudinary")
+  duration   Int
+  isFree     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  @@index([courseId])
+}
+
+// ----------------------- PROJECTS -----------------------
+model Project {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  category     String
+  techStack    String[]
+  sourceUrl    String?
+  demoUrl      String?
+  architecture String?
+  difficulty   Level    @default(BEGINNER)
+  createdAt    DateTime @default(now())
+  @@index([category])
+}
+
+// ----------------------- QUIZ -----------------------
+model Quiz {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  courseId    String?   @db.ObjectId
+  questions   Json // [{id, type, question, options, answer, explanation, marks, negative}]
+  durationMin Int       @default(10)
+  scheduledAt DateTime?
+  negativeMarking Boolean @default(true)
+  createdBy   String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  @@index([courseId])
+}
+
+// ----------------------- QUIZ RESULT -----------------------
+model QuizResult {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  quizId     String   @db.ObjectId
+  score      Float
+  totalMarks Float
+  correct    Int
+  wrong      Int
+  answers    Json?
+  submittedAt DateTime @default(now())
+  @@index([userId])
+  @@index([quizId])
+}
+
+// ----------------------- ATTENDANCE -----------------------
+model Attendance {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  date      DateTime
+  status    AttendanceStatus @default(PRESENT)
+  method    String   @default("manual")
+  markedBy  String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  @@index([userId, date])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+// ----------------------- CERTIFICATE -----------------------
+model Certificate {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  courseId   String   @db.ObjectId
+  serial     String   @unique
+  issuedAt   DateTime @default(now())
+  @@index([userId])
+}
+
+// ----------------------- NOTIFICATION -----------------------
+model Notification {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?         @db.ObjectId
+  title     String
+  body      String
+  type      NotificationType @default(GENERAL)
+  read      Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  @@index([userId, read])
+}
+
+enum NotificationType {
+  GENERAL
+  QUIZ
+  ASSIGNMENT
+  ATTENDANCE
+  ANNOUNCEMENT
+  COURSE
+}
+
+// ----------------------- ANNOUNCEMENT -----------------------
+model Announcement {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  body      String
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ----------------------- BADGE / LEADERBOARD / XP -----------------------
+model Badge {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  name      String
+  xp        Int      @default(0)
+  earnedAt  DateTime @default(now())
+  @@index([userId])
+}
+
+model ActivityLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?  @db.ObjectId
+  action    String
+  meta      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
+model OtpRecord {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  otpHash   String
+  purpose   String   @default("login")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([email, purpose])
+}
+
+model Query {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String      @db.ObjectId
+  subject   String
+  message   String
+  reply     String?
+  status    QueryStatus @default(OPEN)
+  createdAt DateTime    @default(now())
+  repliedAt DateTime?
+  @@index([userId])
+}
+
+enum QueryStatus {
+  OPEN
+  ANSWERED
+}
+
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  type      String // course | video | note | project | quiz
+  refId     String
+  title     String
+  createdAt DateTime @default(now())
+  @@index([userId])
+}

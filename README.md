@@ -1,6 +1,3 @@
-# i_am_coder
-it is an learning management system build for the students to learn from the webapp in free
-# description
 # I AM CODER 🚀
 
 > **Learn Coding Completely FREE. Become Industry Ready.**

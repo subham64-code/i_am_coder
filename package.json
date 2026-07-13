@@ -1,0 +1,35 @@
+{
+  "name": "iamcoder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "I AM CODER — World-class, free, full-stack E-Learning Platform (Next.js 15 + Express + Prisma + MongoDB/MySQL).",
+  "license": "MIT",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev:client": "npm run dev --workspace client",
+    "dev:server": "npm run dev --workspace server",
+    "build": "npm run build --workspace server && npm run build --workspace client",
+    "lint": "npm run lint --workspace client && npm run lint --workspace server",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "npm run typecheck --workspace client && npm run typecheck --workspace server",
+    "docker:up": "docker-compose up -d --build",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,css}": ["prettier --write"]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

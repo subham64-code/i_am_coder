@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "npm run build --workspace client",
+  "installCommand": "npm install",
+  "outputDirectory": "client/.next",
+  "rootDirectory": ".",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@iamcoder_api_url"
+  }
+}

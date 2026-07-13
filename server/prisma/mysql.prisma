@@ -1,0 +1,100 @@
+// Prisma schema — MySQL (relational store for applications, records, audit)
+// Run: prisma generate --schema prisma/mysql.prisma
+//      prisma db push --schema prisma/mysql.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/mysql"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_URL")
+}
+
+model ApplicationForm {
+  id              Int      @id @default(autoincrement())
+  fullName        String
+  photoUrl        String?
+  gender          String
+  dob             DateTime
+  fatherName      String
+  motherName      String
+  phone           String
+  whatsapp        String
+  email           String   @unique
+  passwordHash    String
+  address         String
+  district        String
+  state           String
+  country         String   @default("India")
+  pin             String
+  aadhaar         String   @unique
+  collegeName     String
+  university      String
+  branch          String
+  semester        Int
+  rollNumber      String
+  registrationNo  String
+  studentIdCard   String?
+  tenthPct        Float
+  twelfthPct      Float?
+  diplomaPct      Float?
+  degreeCgpa      Float
+  skills          String
+  resumeUrl       String?
+  aadhaarUrl      String?
+  profilePicUrl   String?
+  interestedCourse String
+  preferredLang   String
+  emergencyContact String
+  declaration     Boolean
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  generatedStudentId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([email])
+}
+
+model StudentRecord {
+  id             Int      @id @default(autoincrement())
+  userId         String   @unique
+  applicationId  Int
+  attendancePct  Float    @default(0)
+  xp             Int      @default(0)
+  streak         Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AdminRecord {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        BigInt   @id @default(autoincrement())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  payload   Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+}
+
+model Report {
+  id        Int      @id @default(autoincrement())
+  type      String
+  data      Json
+  generatedBy String
+  createdAt DateTime @default(now())
+}
